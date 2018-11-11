@@ -22,7 +22,7 @@ function drawSpace()
     love.graphics.draw(planetImg[game.planet[i].img].img,game.planet[i].x-space.x,game.planet[i].y-space.y)
 
     if distanceFrom(game.planet[i].x+8, game.planet[i].y+8, space.x+150, space.y+80) < 16 then
-      drawMessageBox("Press <space> to land.",180-32)
+      drawMessageBox("Press <"..KEY_LAND.."> to land.",180-32)
       drawMessageBox("Home of the "..game.race[game.planet[i].race].name,180-16)
       love.graphics.draw(raceImg[game.race[game.planet[i].race].img].idle,0,180-32)
       love.graphics.draw(raceImg[game.race[game.planet[i].race].img].idle,320-32,180-32)

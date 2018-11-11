@@ -31,23 +31,52 @@ function startGame(seed) -- generates a new game
   end
 
   for i = 1, game.planets do
-    local newPlanet = {x = love.math.random(1, 4000), y = love.math.random(1, 4000), img = love.math.random(1, settings.planets), race = love.math.random(1,game.races), zone = {}}
+    local newPlanet = {x = love.math.random(1, 4000), y = love.math.random(1, 4000), img = love.math.random(1, settings.planets), race = love.math.random(1,game.races), zone = {}, life = love.math.random(1, 10)}
+    game.planet[i] = newPlanet
 
-    for x = 1, 13 do
-      newPlanet.zone[x] = {}
+    newPlanet.zone[1] = {}
+    newPlanet.zone[1][1] = generateZone(i)
 
-      for y = 1, 7 do
-        newPlanet.zone[x][y] = "ground"
-      end
-
-      game.planet[i] = newPlanet
-
-    end
+    game.planet[i] = newPlanet
   end
 
   generateStars()
 
   phase = "space"
+end
+
+function generateZone(i)
+  local z = {}
+  local zt = "plains"
+  if love.math.random(1, 10) > game.planet[i].life then
+    if love.math.random(1,3) == 1 then zt = "house"
+    elseif love.math.random(1,5) == 1 then zt = "industry"
+    elseif love.math.random(1,10) == 1 then zt = "military" end
+  end
+
+  for x = 1, 13 do
+    z[x] = {}
+    for y = 1, 6 do
+      z[x][y] = {}
+      if zt == "house" and love.math.random(1,8) == 1 then
+        z[x][y].type = "house"
+      else
+        z[x][y].type = "ground"
+      end
+
+      --units
+      if love.math.random(1,3) == 1 then
+        if zt == "house" and z[x][y].type == "ground" and love.math.random(1,10) then
+          z[x][y].unit = game.planet[i].race
+          z[x][y].unitCount = love.math.random(1,8)
+        end
+      end
+
+      z[x][y].fog = 1
+    end
+  end
+
+  return z
 end
 
 function generateRaceName()
