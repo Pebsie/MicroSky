@@ -31,7 +31,7 @@ function startGame(seed) -- generates a new game
   end
 
   for i = 1, game.planets do
-    local newPlanet = {x = love.math.random(1, 4000), y = love.math.random(1, 4000), img = love.math.random(1, settings.planets), race = love.math.random(1,game.races), zone = {}, life = love.math.random(1, 10)}
+    local newPlanet = {x = love.math.random(1, 4000), y = love.math.random(1, 4000), img = love.math.random(1, settings.planets), race = love.math.random(1,game.races), zone = {}, life = love.math.random(1, 10), visited = false, actions = {}}
     game.planet[i] = newPlanet
 
     newPlanet.zone[1] = {}
@@ -48,8 +48,11 @@ end
 function generateZone(i)
   local z = {}
   local zt = "plains"
+    if game.planet[i].img == 1 and love.math.random(1,3) == 1 then zt = "mine" end
+
   if love.math.random(1, 10) > game.planet[i].life then
-    if love.math.random(1,3) == 1 then zt = "house"
+    if love.math.random(1,4) == 1 then zt = "mine"
+    elseif love.math.random(1,2) == 1 then zt = "house"
     elseif love.math.random(1,5) == 1 then zt = "industry"
     elseif love.math.random(1,10) == 1 then zt = "military" end
   end
@@ -60,6 +63,8 @@ function generateZone(i)
       z[x][y] = {}
       if zt == "house" and love.math.random(1,8) == 1 then
         z[x][y].type = "house"
+      elseif zt == "mine" and love.math.random(1,10) == 1 then
+        z[x][y].type = "rock"
       else
         z[x][y].type = "ground"
       end
@@ -80,7 +85,7 @@ function generateZone(i)
 end
 
 function generateRaceName()
-  local list = {"zer","bler","blart","blast","flar","pa","yu","yak","yik","jordan","maslen","louis","hardcastle","thomas","lock","tom","ager","ryan","grange","dinkie","shy","headleand","harry","jones","-","' "}
+  local list = {"zer","bler","blart","blast","flar","pa","yu","yak","yik","jordan","maslen","louis","hardcastle","thomas","lock","tom","ager","ryan","grange","dinkie","shy","headleand","harry","jones","-","'"}
   local name = ""
   for i = 1, love.math.random(1,4) do
     name = name..list[love.math.random(1,#list)]

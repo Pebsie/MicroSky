@@ -33,30 +33,43 @@ function love.keypressed( key, scancode, isrepeat )
         end
       end
     elseif phase == "surface" then
-      if key == KEY_UP then surface.y = surface.y - 1 end
-      if key == KEY_DOWN then surface.y = surface.y + 1 end
-      if key == KEY_LEFT then surface.x = surface.x - 1 end
-      if key == KEY_RIGHT then surface.x = surface.x + 1 end
-      if key == KEY_LAND and surface.x == surface.shipx and surface.y == surface.shipy then phase = "space" end
-      if surface.x > 13 then
-        surface.x = 1
-        surface.zoneX = surface.zoneX + 1
-      elseif surface.x < 1 then
-        surface.x = 13
-        surface.zoneX = surface.zoneX - 1
-      elseif surface.y > 6 then
-        surface.y = 1
-        surface.zoneY = surface.zoneY + 1
-      elseif surface.y < 1 then
-        surface.y = 6
-        surface.zoneY = surface.zoneY - 1
-      end
+      if key == KEY_LAND and surface.x == surface.shipx and surface.y == surface.shipy and surface.zoneX == surface.shipZX and surface.zoneY == surface.shipZY then phase = "space"
+      elseif key == KEY_LAND and surface.sel == false then surface.selX = surface.x surface.selY = surface.y surface.sel = true
+      elseif key == KEY_LAND and surface.sel == true then
+        if game.planet[surface.planet].zone[surface.zoneX][surface.zoneY][surface.selX][surface.selY].unit == "miner" and not game.planet[surface.planet].zone[surface.zoneX][surface.zoneY][surface.selX][surface.selY].unitCount then
+          local t = game.planet[surface.planet].zone[surface.zoneX][surface.zoneY][surface.x][surface.y].type
+          if t == "rock" then
+            game.planet[surface.planet].zone[surface.zoneX][surface.zoneY][surface.selX][surface.selY].unitCount = 1
+            addAction("mine",surface.zoneX,surface.zoneY,surface.selX,surface.selY,surface.x,surface.y,surface.planet)
 
-      if not game.planet[surface.planet].zone[surface.zoneX] then game.planet[surface.planet].zone[surface.zoneX] = {} end
-      if not game.planet[surface.planet].zone[surface.zoneX][surface.zoneY] then
-        game.planet[surface.planet].zone[surface.zoneX][surface.zoneY] = generateZone(surface.planet)
+            surface.sel = false
+          end
+        elseif game.planet[surface.planet].zone[surface.zoneX][surface.zoneY][surface.selX][surface.selY].unit == "turret" and not game.planet[surface.planet].zone[surface.zoneX][surface.zoneY][surface.selX][surface.selY].unitCount then
+            game.planet[surface.planet].zone[surface.zoneX][surface.zoneY][surface.selX][surface.selY].unitCount = 1
+            addAction("attack",surface.zoneX,surface.zoneY,surface.selX,surface.selY,surface.x,surface.y,surface.planet)
+            surface.sel = false
+        end
+
+        surface.sel = false
       end
-      uncoverFog()
+      if key == KEY_SCAN and player.res > 0 and not game.planet[surface.planet].zone[surface.zoneX][surface.zoneY][surface.x][surface.y].unit then
+        game.planet[surface.planet].zone[surface.zoneX][surface.zoneY][surface.x][surface.y].unit = "flag"
+      elseif key == "1" and getUnit() == "flag" and player.res > 0 then
+        game.planet[surface.planet].zone[surface.zoneX][surface.zoneY][surface.x][surface.y].unit = "miner"
+        player.res = player.res - 1
+      elseif key == "2" and getUnit() == "flag" and player.res > 2 then
+        game.planet[surface.planet].zone[surface.zoneX][surface.zoneY][surface.x][surface.y].unit = "research"
+        player.res = player.res - 3
+      elseif key == "3" and getUnit() == "flag" and player.res > 9 then
+        game.planet[surface.planet].zone[surface.zoneX][surface.zoneY][surface.x][surface.y].unit = "barracks"
+        player.res = player.res - 10
+      elseif key == "4" and getUnit() == "flag" and player.res > 19 then
+        game.planet[surface.planet].zone[surface.zoneX][surface.zoneY][surface.x][surface.y].unit = "turret"
+        player.res = player.res - 20
+      elseif key == KEY_SCAN and getUnit() == "miner" and game.planet[surface.planet].zone[surface.zoneX][surface.zoneY][surface.x][surface.y].unitCount then
+        player.res = player.res + game.planet[surface.planet].zone[surface.zoneX][surface.zoneY][surface.x][surface.y].unitCount
+        game.planet[surface.planet].zone[surface.zoneX][surface.zoneY][surface.x][surface.y].unitCount = 0
+      end
     end
 end
 
