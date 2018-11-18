@@ -1,9 +1,9 @@
-space = { x = 2000, y = 2000, xv = 0, yv = 0 }
+space = { x = 2000, y = 2000, xv = 0, yv = -5 }
 space.asteroids = {}
 
 function generateStars()
   space.stars = {}
-  for i = 1,1000 do
+  for i = 1,love.math.random(100,1000) do
     space.stars[i] = {x = love.math.random(1,320), y = love.math.random(1,180), layer = love.math.random(2, 15)}
   end
 end
@@ -61,20 +61,31 @@ function drawSpace()
   --  love.graphics.print("Hold <"..KEY_HELP.."> for help")
   end
 
+  --if space.yv > ship.default.terminalVelocity or space.yv < -ship.default.terminalVelocity or space.xv > ship.default.terminalVelocity or space.xv < -ship.default.terminalVelocity then 
+  if getVelocity() > ship.default.terminalVelocity/2 then
+    love.graphics.setColor(1,1.5-(getVelocity()/ship.default.terminalVelocity),1.5-(getVelocity()/ship.default.terminalVelocity))
+  end
+ -- end
+  
   love.graphics.draw(vehicleImg["ship1"],150,80)
 end
 
 function updateSpace(dt)
-  local speed = 64*dt
+  local speed = ship.default.acceleration*dt
   local drag = 32*dt
+  local terminalVelocity = ship.default.terminalVelocity
 
-  if love.keyboard.isDown(KEY_UP) then space.yv = space.yv - speed end
-  if love.keyboard.isDown(KEY_DOWN) then space.yv = space.yv + speed end
-  if love.keyboard.isDown(KEY_LEFT) then space.xv = space.xv - speed end
-  if love.keyboard.isDown(KEY_RIGHT) then space.xv = space.xv + speed end
+  if love.keyboard.isDown(KEY_UP) and space.yv > -terminalVelocity then space.yv = space.yv - speed end
+  if love.keyboard.isDown(KEY_DOWN) and space.yv < terminalVelocity then space.yv = space.yv + speed end
+  if love.keyboard.isDown(KEY_LEFT) and space.xv > -terminalVelocity then space.xv = space.xv - speed end
+  if love.keyboard.isDown(KEY_RIGHT) and space.xv < terminalVelocity then space.xv = space.xv + speed end
 
   space.x = space.x + space.xv*dt
   space.y = space.y + space.yv*dt
+  if space.x > 4000 then space.x = 0 end
+  if space.x < 0 then space.x = 4000 end
+  if space.y > 4000 then space.y = 0 end
+  if space.y < 0 then space.y = 4000 end
 --  if space.xv > 10 then space.xv = space.xv - drag*dt elseif space.xv < -10 then space.xv = space.xv + drag*dt else space.xv = 0 end
 --  if space.yv > 10 then space.yv = space.yv - drag*dt elseif space.yv < -10 then space.yv = space.yv + drag*dt else space.yv = 0 end
 
@@ -115,4 +126,9 @@ function getRepStr(i)
   elseif i > -10 then return "liked"
   elseif i > -20 then return "worshipped as a god"
   else return "never thought of" end
+end
+
+function getVelocity()
+  if math.abs(space.xv) > math.abs(space.yv) then return math.abs(space.xv)
+  else return math.abs(space.yv) end
 end

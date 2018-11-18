@@ -7,4 +7,6 @@ require("modules/surface")
 require("modules/ui/handle")
 require("modules/ui/menu")
 require("modules/ui/tools")
+
 require("modules/data/loadImages")
+require("modules/data/ships")
