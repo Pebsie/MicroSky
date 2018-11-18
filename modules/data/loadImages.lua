@@ -37,7 +37,27 @@ function loadPlanets()
     planetImg[i] = {}
     planetImg[i].image =  love.image.newImageData("img/planets/"..i..".png") -- imageData is used here to extract the center pixel for the planet surface
     planetImg[i].img = love.graphics.newImage(planetImg[i].image)
-    planetImg[i].r, planetImg[i].g, planetImg[i].b = planetImg[i].image:getPixel(planetImg[i].img:getWidth()/2,planetImg[i].img:getHeight()/2) -- get the center pixel
+    local ar = 0
+    local ag = 0
+    local ab = 0
+    local psf = 0
+    for x = 1, planetImg[i].img:getWidth()-1 do
+      for y = 1, planetImg[i].img:getHeight()-1 do
+        local r,g,b = planetImg[i].image:getPixel(x,y)
+        if r > 0 or g > 0 or b > 0 then
+          ar = ar + r
+          ag = ag + g
+          ab = ab + b
+          psf = psf + 1
+        end
+      end
+    end
+  
+    planetImg[i].r = ar / psf
+    planetImg[i].g = ag / psf
+    planetImg[i].b = ab / psf
+
+    -- planetImg[i].r, planetImg[i].g, planetImg[i].b = planetImg[i].image:getPixel(planetImg[i].img:getWidth()/2,planetImg[i].img:getHeight()/2) -- get the center pixel
   end
 
   planetImg["asteroid"] = {}
